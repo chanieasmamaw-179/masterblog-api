@@ -90,5 +90,19 @@ def search_posts():
         return jsonify({'message': 'No matching posts found'}), 404
 
 
+# Sort posts by title or content
+@app.route('/api/posts/sort', methods=['GET'])
+def sort_posts():
+    sort_by = request.args.get('sort_by', 'title')  # Get the sorting field, default to 'title'
+    direction = request.args.get('direction', 'asc')  # Get the sorting direction, default to ascending
+
+    if sort_by not in ['title', 'content']:
+        return jsonify({'message': 'Invalid sorting field. Must be either "title" or "content".'}), 400
+
+    sorted_posts = sorted(POSTS, key=lambda post: post[sort_by].lower(), reverse=(direction == 'desc'))
+
+    return jsonify(sorted_posts), 200
+
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5002, debug=True)
