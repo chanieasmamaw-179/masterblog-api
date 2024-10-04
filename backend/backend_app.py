@@ -14,13 +14,13 @@ POSTS = [
 def get_posts():
     return jsonify(POSTS)
 
-@app.route('/api/posts/<int:post_id>', methods=['GET'])  # Fixed the route here
+@app.route('/api/posts/<int:post_id>', methods=['GET'])
 def get_post(post_id):
     post = next((post for post in POSTS if post['id'] == post_id), None)
     if post:
         return jsonify(post)
     else:
-        return jsonify({'message': 'Post not found'}), 404  # Corrected the spelling
+        return jsonify({'message': 'Post not found'}), 404
 
 # Create a new post with error handling
 @app.route('/api/posts', methods=['POST'])
@@ -35,6 +35,18 @@ def create_post():
     new_post['id'] = POSTS[-1]['id'] + 1 if POSTS else 1
     POSTS.append(new_post)
     return jsonify(new_post), 201
+
+# Delete a post by ID
+@app.route('/api/posts/<int:post_id>', methods=['DELETE'])  # Use the correct route
+def delete_post(post_id):
+    global POSTS
+    post = next((post for post in POSTS if post['id'] == post_id), None)
+
+    if post:
+        POSTS = [p for p in POSTS if p['id'] != post_id]  # Remove the post from the list
+        return jsonify({'message': f'Post with id {post_id} has been deleted successfully.'}), 200
+    else:
+        return jsonify({'message': 'Post not found'}), 404
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5002, debug=True)
